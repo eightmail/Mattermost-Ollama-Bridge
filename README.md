@@ -64,7 +64,7 @@ To ensure your cluster nodes can pull container builds correctly without hardcod
    <YOUR_REGISTRY_NODE_IP> local-registry
    ```
 
-2. **Configure Podman for insecure registry pushes**  
+2. **Configure Podman** for insecure registry pushes  
    create `/etc/containers/registries.conf.d/local-registry.conf`:  
    ```yaml
    [[registry]]
@@ -100,18 +100,19 @@ To ensure your cluster nodes can pull container builds correctly without hardcod
 #### 🟤 Step 2b. Setup B: You have a running Mattermost server  
 * The `ollama-bridge` subchart runs a custom Python application; build (or rebuild) and push it directly to your local registry:  
 
-1. **Get your Mattermost pods name:**  
+1. **Get your Mattermost pod name:**  
    ```bash
-  kubectl get pods | grep mattermost
-  ```  
+   kubectl get pods | grep mattermost
+   ```  
   
-2. **Create your Mattermost chatbots and capture the tokens:**   
+2. **Create your Mattermost chatbots** and capture the tokens:   
    ```bash
    kubectl exec -it <mattermost-pod-name> -n <namespace> -- mmctl --local bot create <bot-username> --display-name "<Friendly Display Name>" --description "<Description of the bot>" --with-token   
-   ```
-3. **Update `local-values.yaml` file with chatbot tokens.**   
+   ```  
 
-4. **Lint your chart to verify configuration syntax:**  
+3. **Update `local-values.yaml`** file with chatbot tokens.   
+
+4. **Lint your chart** to verify configuration syntax:  
    ```bash
    helm lint . -f local-values.yaml
    ```
