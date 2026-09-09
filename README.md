@@ -134,15 +134,16 @@ The `ollama-bridge` subchart runs a custom Python application. Build and push it
 
 ## 📌 Configuration Parameters Reference
 
-| Parameter | Description | Default |
-|---|---|---|
-| `replicaCount` | Number of Mattermost replicas | `1` |
-| `ollama-bridge.image.registry` | Container registry host and port | `local-registry:5000` |
-| `ollama-bridge.image.repository` | Bridge container repository path | `library/ollama-bridge` |
-| `ollama-bridge.image.tag` | Bridge container tag version | `latest` |
-| `ollama-bridge.env.OLLAMA_HOST` | Target Ollama backend API endpoint | `http://ollama.svc.cluster.local:11434` |
-| `ollama-bridge.env.OLLAMA_MODELS` | Comma-separated list of Ollama models | `<first model in list>` |
-| `ollama-bridge.env.MATTERMOST_BOT_TOKENS` | Comma-separated list of Bot tokens | `""` |
+| Parameter | local-value | Description | Default |
+|---|---|---|---|
+| `replicaCount` | replicaCount | Number of Mattermost replicas | `1` |
+| `ollama-bridge.image.registry` | repository | Container registry host and port | `local-registry:5000` |
+| `ollama-bridge.image.repository` | repository | Bridge container repository path | `library/ollama-bridge` |
+| `ollama-bridge.image.tag` | tag | Bridge container tag version | `latest` |
+| `ollama-bridge.env.OLLAMA_HOST` | OLLAMA_HOST | Target Ollama backend API endpoint | `http://ollama.svc.cluster.local:11434` |
+| `ollama-bridge.env.OLLAMA_TIMEOUT`| OLLAMA_TIMEOUT | Timeout to Ollama backend  | `60` |
+| `ollama-bridge.env.OLLAMA_MODELS` | models | Comma-separated list of Ollama models | `<first model in list>` |
+| `ollama-bridge.env.MATTERMOST_BOT_TOKENS` | botTokens | Comma-separated list of Bot tokens | `""` |
 
 ---
 

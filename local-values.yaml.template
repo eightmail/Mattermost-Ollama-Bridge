@@ -1,21 +1,21 @@
 database:
   dbName: "mattermost"
   auth:
-    existingSecret: "k3s-database-secret"   # Name of the K3s secret managed on the cluster
+    existingSecret: "k3s-database-secret"   # <--- Name of the K3s secret managed on the cluster
   persistence:
     existingClaim: "mattermost-db-pvc"
     storageClass: "local-path"
 
 mattermost:
   image:
-    repository: "mattermost/mattermost-team-edition"   # Update for your target architecture if needed (e.g. ARM64)
+    repository: "mattermost/mattermost-team-edition"   # <--- Update for your target architecture if needed (e.g. ARM64)
     tag: "latest"
     pullPolicy: IfNotPresent
   excludedNode: ""   # <--- Optional: Node name to forbid running on, or leave blank
   existingSecret: "k3s-database-secret"
   persistence:
-    dataExistingClaim: "mattermost-app-mattermost-team-edition"
-    pluginsExistingClaim: "mattermost-app-mattermost-team-edition-plugins"
+    dataExistingClaim: "mattermost-team-edition"
+    pluginsExistingClaim: "mattermost-team-edition-plugins"
     storageClass: "local-path"
 
 ollama-bridge:
