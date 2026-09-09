@@ -19,7 +19,7 @@ A Raspberry Pi K8S Cluster umbrella Helm chart that deploys a self-hosted **Matt
 3. Continue to Setup B.  
 
 #### 🟤 Setup B: You have a running Mattermost server  
-1. **Create your Mattermost chatbots and capture the tokens:**  
+1. Create your Mattermost chatbots and capture the tokens:  
    ```bash
    kubectl exec -it <mattermost-pod-name> -n <namespace> -- mmctl --local bot create <bot-username> --display-name "<Friendly Display Name>" --description "<Description of the bot>" --with-token   
    ```
