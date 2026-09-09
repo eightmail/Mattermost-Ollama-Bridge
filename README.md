@@ -12,8 +12,8 @@ A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a s
    mmctl bot create <bot-username> --display-name "<Friendly Display Name>" --description "<Description of the bot>" --with-token
    ```
 2. Configure Podman for insecure registry pushes 
-3. Create a `local-values.yaml` file in the root directory to define your bot tokens, model mappings, and deployment overrides. 
-   *NOTE: Use the `local-values.yaml.template` file as a template to align with `main.py`* 
+3. Create a `local-values.yaml` file in the root directory to define your bot tokens, model mappings, and deployment overrides.  
+   📝  Use the `local-values.yaml.template` file as a template to align with `main.py`  
 4. Install the stack with helm 
    ```bash
    helm upgrade --install mattermost-stack . -f local-values.yaml
@@ -48,13 +48,18 @@ A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a s
 ### Step 1: Configure Your Local Registry & Podman
 To ensure your cluster nodes can pull container builds correctly without hardcoding machine names:
 
-1. **Map a friendly local registry alias** on your nodes (add to `/etc/hosts`):
+1. **Map a friendly local registry alias** on your nodes (add to `/etc/hosts`):  
+   ```text
    <YOUR_REGISTRY_NODE_IP> local-registry
+   ```
 
-2. **Configure Podman for insecure registry pushes** (create `/etc/containers/registries.conf.d/local-registry.conf`):
+2. **Configure Podman for insecure registry pushes**  
+   create `/etc/containers/registries.conf.d/local-registry.conf`:  
+   ```yaml
    [[registry]]
    location = "local-registry:5000"
    insecure = true
+   ```
 
 ---
 
@@ -124,7 +129,7 @@ The `ollama-bridge` subchart runs a custom Python application. Build and push it
 | `ollama-bridge.image.repository` | Bridge container repository path | `library/ollama-bridge` |
 | `ollama-bridge.image.tag` | Bridge container tag version | `latest` |
 | `ollama-bridge.env.OLLAMA_HOST` | Target Ollama backend API endpoint | `http://ollama.svc.cluster.local:11434` |
-| `ollama-bridge.env.OLLAMA_MODELS` | Comma-separated list of Ollama models | `llama3:8b` |
+| `ollama-bridge.env.OLLAMA_MODELS` | Comma-separated list of Ollama models | `<first model in list>` |
 | `ollama-bridge.env.MATTERMOST_BOT_TOKENS` | Comma-separated list of Bot tokens | `""` |
 
 ---
