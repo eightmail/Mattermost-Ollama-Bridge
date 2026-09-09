@@ -1,17 +1,16 @@
 # Mattermost & Ollama Bridge Helm Chart
-
-A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a self-hosted **Mattermost Team Edition** collaboration platform backed by **PostgreSQL**, integrated seamlessly with a custom **Ollama AI Bridge** subchart for local LLM chatbot interactions.
+A Raspberry Pi K8S Cluster umbrella Helm chart that deploys a self-hosted **Mattermost Team Edition** collaboration platform backed by **PostgreSQL**, integrated seamlessly with a custom **Ollama AI Bridge** subchart for local LLM chatbot interactions.
 
 ---
 
 ## ⚡ TL;DR
 📝 **The Chicken-and-Egg Problem:** If you are setting up a brand new Mattermost server, you have to boot it up first to generate tokens, then redeploy the bridge. If you already have a server, you can do it all in one pass.
 
-### ⚙️ Universal Prerequisites (All Setups)
+### System Prerequisites (All Setups)
 1. Configure Podman for insecure registry pushes if you haven't already.
-2. Create a `local-values.yaml` file in the root directory (copy from `local-values.yaml.template`).
+2. Create and configure a `local-values.yaml` file in the root directory (copy from `local-values.yaml.template`).
 
-#### Setup A. If this is a BRAND NEW Mattermost server (skip to B. if you already have a server)
+#### 🟢 Setup A. If this is a BRAND NEW Mattermost server (skip to Setup B. if you already have a server)
 1. Put placeholder values in your 'local-values.yaml' for the chatbot tokens so the deployment can boot up.  
 2. Install the stack with Helm (from the root folder):  
    ```bash
@@ -19,7 +18,7 @@ A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a s
    ```
 3. Continue to Setup B.  
 
-#### Setup B: You have a running Mattermost server  
+#### 🟤 Setup B: You have a running Mattermost server  
 1. **Create your Mattermost chatbots and capture the tokens:**  
    ```bash
    mmctl bot create <bot-username> --display-name "<Friendly Display Name>" --description "<Description bot of the>" --with-token
@@ -28,17 +27,17 @@ A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a s
 3. Build and push the Ollama bridge container:  
    ```bash
    cd charts/ollama-bridge/
-   sudo ./builbot.sh
+   sudo ./buildbot.sh
    ```
-4. Install the stack with Helm (from the root folder):  
+4. Follow the printed instructions or just install the stack with Helm (from the root folder):  
    ```bash
+   cd ../../
    helm upgrade --install mattermost-stack . -f local-values.yaml
    ```
 
 ---
 
 ## 🌟 Key Architecture & Features
-
 * **Umbrella Chart Pattern:** Modular design housing the core Mattermost stack and decoupling the `ollama-bridge` as a dedicated subchart.
 * **1-to-1 Multi-Bot AI Routing:** Run multiple AI chatbots concurrently in separate Mattermost channels, each mapped 1-to-1 to its own specific Ollama model (e.g., Llama 3, Qwen, Abliterated models).
 * **Node-Agnostic Local Registry:** Uses a clean, portable local registry pattern (`local-registry:5000`) rather than hardcoding specific machine names into configurations.
@@ -48,17 +47,16 @@ A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a s
 ---
 
 ## 📁 Getting Started & Setup
-
-### Prerequisites
+### Universal Prerequisites
 * A Kubernetes cluster (Tested on K3s)
 * Helm 3.x installed
 * An active Ingress Controller (e.g., Traefik) and dynamic storage provisioner (e.g., `local-path`)
-* An insecure local container registry running on your network (e.g., at port `5000`).
-* An accessable Ollama server  
+* A local container registry running on your network (e.g., at port `5000`).
+* An accessible Ollama server  
 
 ---
 
-### Step 1: Configure Your Local Registry & Podman
+#### Step 1: Configure Your Local Registry & Podman
 To ensure your cluster nodes can pull container builds correctly without hardcoding machine names:
 
 1. **Map a friendly local registry alias** on your nodes (add to `/etc/hosts`):  
@@ -76,8 +74,31 @@ To ensure your cluster nodes can pull container builds correctly without hardcod
 
 ---
 
-### Step 2: Build (or rebuild) and Push the Ollama Bridge Image
-The `ollama-bridge` subchart runs a custom Python application. Build and push it directly to your local registry:
+📝 **The Chicken-and-Egg Problem:** If you are setting up a brand new Mattermost server, you have to boot it up first to generate tokens, then redeploy the bridge. If you already have a server, you can do it all in one pass.
+
+### Step 2: Configure Deployment  
+1. Create a `local-values.yaml` file in the root directory to define your bot tokens, model mappings, and deployment overrides.  
+   📝 Use the `local-values.yaml.template` to align with `main.py`; just populate it and rename it `local-values.yaml` 
+
+2. Populate the `local-values.yaml` file with that variables matching your system setup. Checkout the [Configuration Parameters Reference](#configuration-parameters-reference) for more details on value referencing.  
+
+***Skip to Step 2b. Setup B. if you already have a running Mattermost server***  
+---
+
+#### 🟢 Step 2a. Setup A. If this is a BRAND NEW Mattermost server 
+* You will need a Mattermost server in order to create chatbots and get their tokens, becasue the tokens must be dynamically generated.  
+1. Put placeholder values in your 'local-values.yaml' for the chatbot tokens so the deployment can boot up. You will see connection errors in the logs for the *ollama-bridge* container, ignore those.  
+
+2. Install the stack with Helm (from the root folder):  
+   ```bash
+   helm upgrade --install mattermost-stack . -f local-values.yaml
+   ```
+3. Continue to Step 2b. Setup B.  
+
+---
+
+#### 🟤 Step 2b. Setup B: You have a running Mattermost server  
+* The `ollama-bridge` subchart runs a custom Python application; build (or rebuild) and push it directly to your local registry:  
 
 1. **Navigate into the subchart directory:**
    ```bash
@@ -104,14 +125,7 @@ The `ollama-bridge` subchart runs a custom Python application. Build and push it
 
 ---
 
-### Step 3: Configure Deployment (`local-values.yaml`)
-
-1. Create a `local-values.yaml` file in the root directory to define your bot tokens, model mappings, and deployment overrides.   
-   📝 Use the `local-values.yaml.template` to align with `main.py`; just populate it and rename it `local-values.yaml` 
-
----
-
-### Step 4: Deploy the Stack
+### Step 3: Deploy the Stack
 
 1. **Lint your chart to verify configuration syntax:**
    ```bash
