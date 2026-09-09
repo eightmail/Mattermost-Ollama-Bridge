@@ -1,0 +1,14 @@
+replicaCount: 1
+image:
+  repository: localhost/local/mattermost-ollama-bridge
+  tag: latest
+env:
+  OLLAMA_HOST: "http://robok8s.lan:11434"
+  MATTERMOST_URL: "http://mattermost-team-edition:8065"
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi

@@ -1,0 +1,6 @@
+dependencies:
+- name: ollama-bridge
+  repository: file://charts/ollama-bridge
+  version: 0.1.0
+digest: sha256:81f1a6d1616fdb73b92527fe558d5e70fcdc4eb2f66a40a66936c0f55a2e7a39
+generated: "2026-09-06T16:21:08.339706376-07:00"

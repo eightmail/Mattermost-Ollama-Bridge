@@ -1,0 +1,6 @@
+mattermostdriver==7.3.2
+requests==2.31.0
+fastapi
+uvicorn
+websockets
+aiohttp

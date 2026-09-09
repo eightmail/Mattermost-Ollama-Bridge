@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mattermost-stack.fullname" . }}-app
+  labels:
+    {{- include "mattermost-stack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: application
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "mattermost-stack.fullname" . }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ include "mattermost-stack.fullname" . }}-app
+    spec:
+      {{- if .Values.mattermost.excludedNode }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: NotIn
+                values:
+                - "{{ .Values.mattermost.excludedNode }}"
+      {{- end }}
+      containers:
+        - name: mattermost
+          image: "{{ .Values.mattermost.image.repository }}:{{ .Values.mattermost.image.tag }}"
+          imagePullPolicy: {{ .Values.mattermost.image.pullPolicy }}
+          env:
+            - name: MM_SQLSETTINGS_DRIVERNAME
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mattermost.existingSecret }}
+                  key: POSTGRES_PASSWORD
+            - name: MM_SQLSETTINGS_DATASOURCE
+              value: "postgres://{{ .Values.database.dbUser }}:$(POSTGRES_PASSWORD)@mattermost-db:5432/{{ .Values.database.dbName }}?sslmode=disable"
+            - name: MM_PLUGINSETTINGS_ENABLEUPLOADS
+              value: 'true'
+            - name: MM_PLUGINSETTINGS_REQUIREPLUGINSIGNATURE
+              value: 'false'
+          ports:
+            - containerPort: {{ .Values.mattermost.port }}
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /api/v4/system/ping
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v4/system/ping
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.mattermost.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /mattermost/config
+              name: mattermost-config
+            - mountPath: /mattermost/data
+              name: mattermost-data
+            - mountPath: /mattermost/client/plugins
+              name: mattermost-plugins
+      volumes:
+        - name: mattermost-config
+          emptyDir: {}
+        - name: mattermost-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.mattermost.persistence.dataExistingClaim | default (printf "%s-data-pvc" (include "mattermost-stack.fullname" .)) }}
+        - name: mattermost-plugins
+          persistentVolumeClaim:
+            claimName: {{ .Values.mattermost.persistence.pluginsExistingClaim | default (printf "%s-plugins-pvc" (include "mattermost-stack.fullname" .)) }}

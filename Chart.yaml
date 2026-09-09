@@ -1,0 +1,12 @@
+apiVersion: v2
+name: mattermost-stack
+description: Helm chart for Mattermost Team Edition with PostgreSQL on K8S
+type: application
+version: 0.1.0
+appVersion: "10.x"
+
+dependencies:
+  - name: ollama-bridge
+    version: 0.1.0
+    repository: "file://charts/ollama-bridge"
+    condition: ollama-bridge.enabled

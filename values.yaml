@@ -1,0 +1,74 @@
+# Default values for mattermost-stack.
+
+replicaCount: 1
+
+global:
+  domainSuffix: ".local"
+
+# Database Configuration
+database:
+  image: postgres:15-alpine
+  dbName: mattermost
+  dbUser: mattermost
+  dbPassword: ""
+  persistence:
+    existingClaim: ""
+    storageClass: standard
+    storageSize: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Mattermost Team Edition Application Configuration
+mattermost:
+  image:
+    repository: mattermost/mattermost-team-edition
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 8065
+  excludedNode: ""
+  persistence:
+    dataExistingClaim: ""
+    pluginsExistingClaim: ""
+    storageClass: standard
+    dataStorageSize: 10Gi
+    pluginsStorageSize: 1Gi
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+# Ingress Router Configuration
+ingress:
+  enabled: true
+  className: traefik
+  host: mattermost.local
+
+# Ollama Bridge Subchart Configurations
+mattermost-ollama-bridge:
+  enabled: true
+  replicaCount: 1
+  image:
+    # Use a generic or empty prefix by default
+    registry: "local-registry:5000" # Can be overridden via command line
+    repository: "library/ollama-bridge"
+    tag: latest
+  env:
+    OLLAMA_HOST: "http://ollama.ollama.svc.cluster.local:11434"
+    MATTERMOST_URL: "http://mattermost-stack-app:8065"
+  # List of tokens for multiple bots (empty by default for public repo)
+  botTokens: []
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi

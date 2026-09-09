@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mattermost-stack.fullname" . }}-db
+  labels:
+    {{- include "mattermost-stack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "mattermost-stack.fullname" . }}-db
+  template:
+    metadata:
+      labels:
+        app: {{ include "mattermost-stack.fullname" . }}-db
+    spec:
+      containers:
+        - name: postgres
+          image: "postgres:15-alpine"
+          env:
+            - name: POSTGRES_DB
+              value: "{{ .Values.database.dbName }}"
+            - name: POSTGRES_USER
+              value: "{{ .Values.database.dbUser }}"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mattermost-stack.fullname" . }}-secrets
+                  key: POSTGRES_PASSWORD
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.database.persistence.existingClaim }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mattermost-db
+  labels:
+    {{- include "mattermost-stack.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres
+  selector:
+    app: {{ include "mattermost-stack.fullname" . }}-db

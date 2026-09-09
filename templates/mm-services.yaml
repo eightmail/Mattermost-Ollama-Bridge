@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mattermost-team-edition
+  labels:
+    {{- include "mattermost-stack.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.mattermost.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "mattermost-stack.fullname" . }}-app
+{{- if not .Values.mattermost.persistence.dataExistingClaim -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "mattermost-stack.fullname" . }}-data-pvc
+  labels:
+    {{- include "mattermost-stack.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "{{ .Values.mattermost.persistence.storageClass }}"
+  resources:
+    requests:
+      storage: "{{ .Values.mattermost.persistence.dataStorageSize }}"
+{{- end -}}
+{{- if not .Values.mattermost.persistence.pluginsExistingClaim -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "mattermost-stack.fullname" . }}-plugins-pvc
+  labels:
+    {{- include "mattermost-stack.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "{{ .Values.mattermost.persistence.storageClass }}"
+  resources:
+    requests:
+      storage: "{{ .Values.mattermost.persistence.pluginsStorageSize }}"
+{{- end -}}
