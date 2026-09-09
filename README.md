@@ -1,17 +1,27 @@
-# Mattermost & Ollama AI Bridge Helm Chart
+# Mattermost & Ollama Bridge Helm Chart
 
 A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a self-hosted **Mattermost Team Edition** collaboration platform backed by **PostgreSQL**, integrated seamlessly with a custom **Ollama AI Bridge** subchart for local LLM chatbot interactions.
 
 ---
 
-## TLDR
-** Note: if you don't already have a Mattermost server, you will have to rebuild the ollama-bridge with the bot tokens you create in the Mattermost server after you bring it up.
+## ⚡ TL;DR
+** 📝 if you don't already have a Mattermost server, you will have to rebuild the ollama-bridge with the bot tokens you create in the Mattermost server after you bring it up.
 
-1. Create Mattermost bots and get tokens `mmctl bot create <bot-username> --display-name "<Friendly Display Name>" --description "<Description of the bot>" --with-token`
+1. Create Mattermost bots and get tokens 
+   ```bash
+   mmctl bot create <bot-username> --display-name "<Friendly Display Name>" --description "<Description of the bot>" --with-token
+   ```
 2. Configure Podman for insecure registry pushes 
-3. Create a `local-values.yaml` file in the root directory to define your bot tokens, model mappings, and deployment overrides. (use the local-values.yaml.template to align with main.py) 
-4. Install the stack with helm `helm upgrade --install mattermost-stack . -f local-values.yaml`
-4. Build and push the image using the script charts/ollama-bridge/builbot.sh
+3. Create a `local-values.yaml` file in the root directory to define your bot tokens, model mappings, and deployment overrides. 
+   *NOTE: Use the `local-values.yaml.template` file as a template to align with `main.py`* 
+4. Install the stack with helm 
+   ```bash
+   helm upgrade --install mattermost-stack . -f local-values.yaml
+   ```
+4. Build and push the image using the script:
+   ```bash
+    charts/ollama-bridge/builbot.sh
+   ```
 
 ---
 
@@ -25,26 +35,7 @@ A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a s
 
 ---
 
-## 📁 Repository Structure
-
-mattermost-stack/
-├── Chart.yaml                  # Umbrella chart definition
-├── values.yaml                 # Default public-facing values (Greenfield-ready)
-├── local-values.yaml           # Local/Production overrides (Ignored via .gitignore)
-├── .gitignore                  # Protects local secrets and build artifacts
-├── charts/
-│   └── ollama-bridge/ # Integrated AI bridge subchart
-└── templates/                  # Decoupled Kubernetes resource manifests
-    ├── _helpers.tpl            # Chart naming and labeling logic
-    ├── db-deployment.yaml      # PostgreSQL Deployment, PVC, and Service
-    ├── mm-deployment.yaml      # Mattermost Application Deployment
-    ├── mm-services.yaml        # Mattermost Service and optional PVCs
-    ├── ingress.yaml            # Traefik Ingress routing configuration
-    └── secrets.yaml            # Secure credential and token management
-
----
-
-## 🚀 Getting Started & Setup
+## 📁 Getting Started & Setup
 
 ### Prerequisites
 * A Kubernetes cluster (Tested on K3s)
@@ -76,7 +67,7 @@ The `ollama-bridge` subchart runs a custom Python application. Build and push it
    ```
 
 2. **Build and push the image:**
-   ** Note: You can use the included script or do it manually. The script is useful for rebuilding after modifiying `main.py` **
+   ** 📝 You can use the included script or do it manually. The script is useful for rebuilding after modifiying `main.py` **
    a. Using the included script
       ```bash
       sudo ./buildbot.sh
@@ -95,9 +86,9 @@ The `ollama-bridge` subchart runs a custom Python application. Build and push it
 ---
 
 ### Step 3: Configure Deployment (`local-values.yaml`)
-Create a `local-values.yaml` file in the root directory to define your bot tokens, model mappings, and deployment overrides. *(This file is ignored by `.gitignore` to keep your tokens secure).*
 
-1. Use the local-values.yaml.template to align with main.py; just populate it and rename it `local-values.yaml` 
+1. Create a `local-values.yaml` file in the root directory to define your bot tokens, model mappings, and deployment overrides. 
+   📝 Use the `local-values.yaml.template` to align with `main.py`; just populate it and rename it `local-values.yaml` 
 
 ---
 
@@ -123,10 +114,10 @@ Create a `local-values.yaml` file in the root directory to define your bot token
 
 ---
 
-## ⚙️ Configuration Parameters Reference
+## 📌 Configuration Parameters Reference
 
 | Parameter | Description | Default |
-| :--- | :--- | :--- |
+|---|---|---|
 | `replicaCount` | Number of Mattermost replicas | `1` |
 | `ollama-bridge.image.registry` | Container registry host and port | `local-registry:5000` |
 | `ollama-bridge.image.repository` | Bridge container repository path | `library/ollama-bridge` |
@@ -140,3 +131,7 @@ Create a `local-values.yaml` file in the root directory to define your bot token
 ## 🔒 Security Best Practices
 * **Take care to not commit `local-values.yaml`** to source control: It should be configured to be explicitly blocked via `.gitignore`.
 * Kubernetes `Secrets` handle sensitive connection strings and bot tokens safely at runtime without exposing them in plaintext deployment specs.
+
+## ⚙️ 
+## 🌟 
+## 🚀 
