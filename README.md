@@ -183,7 +183,7 @@ To ensure your cluster nodes can pull container builds correctly without hardcod
 ## 🚀 Performance Best Practices  
 * Preload the Ollama models into memory.  
 ```bash
-curl http://<local ip address>:11434/api/generate -d '{"model": "huihui_ai/qwen3-abliterated:14b", "prompt": "hi", "stream": false}'
+curl http://<ollama ip address>:11434/api/generate -d '{"model": "huihui_ai/qwen3-abliterated:14b", "prompt": "hi", "stream": false}'
 ```  
 * Set a forgiving timeout; depending on your Ollama server's RAM bandwidth (i.e.; 120)  
 
