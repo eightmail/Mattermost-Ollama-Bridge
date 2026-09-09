@@ -24,10 +24,10 @@ A Raspberry Pi K8S Cluster umbrella Helm chart that deploys a self-hosted **Matt
    kubectl exec -it <mattermost-pod-name> -n <namespace> -- mmctl --local bot create <bot-username> --display-name "<Friendly Display Name>" --description "<Description of the bot>" --with-token   
    ```
 2. Update `local-values.yaml` file with chatbot tokens.   
-3. Build and push the Ollama bridge container:  
+3. Build and push the Ollama bridge container (switch `--engine docker` if your system has docker: podman is default):  
    ```bash
    cd charts/ollama-bridge/
-   sudo ./buildbot.sh
+   sudo ./buildbot.sh --engine podman|docker
    ```
 4. Follow the printed instructions or just install the stack with Helm (from the root folder):  
    ```bash
@@ -47,6 +47,8 @@ A Raspberry Pi K8S Cluster umbrella Helm chart that deploys a self-hosted **Matt
 ---
 
 ## 📁 Getting Started & Setup
+*📝 This README and the buildbot.sh script assumes podman is the default*  
+
 ### Universal Prerequisites
 * A Kubernetes cluster (Tested on K3s)
 * Helm 3.x installed
@@ -127,9 +129,9 @@ To ensure your cluster nodes can pull container builds correctly without hardcod
 
    a. Using the included script
       ```bash
-      sudo ./buildbot.sh
+      sudo ./buildbot.sh --engine podman|docker
       ```
-   b. Building it manually
+   b. Building it manually (using docker or podman)
       ```bash 
       sudo podman build -t local-registry:5000/library/ollama-bridge:latest .
       sudo podman push local-registry:5000/library/ollama-bridge:latest
