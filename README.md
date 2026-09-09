@@ -5,22 +5,34 @@ A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a s
 ---
 
 ## ⚡ TL;DR
-📝 if you don't already have a Mattermost server, you will have to rebuild the ollama-bridge with the bot tokens you create in the Mattermost server after you bring it up.   
+📝 **The Chicken-and-Egg Problem:** If you are setting up a brand new Mattermost server, you have to boot it up first to generate tokens, then redeploy the bridge. If you already have a server, you can do it all in one pass.
 
-1. Create Mattermost bots and get tokens 
-   ```bash
-   mmctl bot create <bot-username> --display-name "<Friendly Display Name>" --description "<Description of the bot>" --with-token
-   ```
-2. Configure Podman for insecure registry pushes 
-3. Create a `local-values.yaml` file in the root directory to define your bot tokens, model mappings, and deployment overrides.  
-   📝  Use the `local-values.yaml.template` file as a template to align with `main.py`  
-4. Install the stack with helm 
+### ⚙️ Universal Prerequisites (All Setups)
+1. Configure Podman for insecure registry pushes if you haven't already.
+2. Create a `local-values.yaml` file in the root directory (copy from `local-values.yaml.template`).
+
+#### Setup A. If this is a BRAND NEW Mattermost server (skip to B. if you already have a server)
+1. Put placeholder values in your 'local-values.yaml' for the chatbot tokens so the deployment can boot up.  
+2. Install the stack with Helm (from the root folder):  
    ```bash
    helm upgrade --install mattermost-stack . -f local-values.yaml
    ```
-4. Build and push the image using the script:
+3. Continue to Setup B.  
+
+#### Setup B: You have a running Mattermost server  
+1. **Create your Mattermost chatbots and capture the tokens:**  
    ```bash
-    charts/ollama-bridge/builbot.sh
+   mmctl bot create <bot-username> --display-name "<Friendly Display Name>" --description "<Description bot of the>" --with-token
+   ```
+2. Update `local-values.yaml` file with chatbot tokens.   
+3. Build and push the Ollama bridge container:  
+   ```bash
+   cd charts/ollama-bridge/
+   sudo ./builbot.sh
+   ```
+4. Install the stack with Helm (from the root folder):  
+   ```bash
+   helm upgrade --install mattermost-stack . -f local-values.yaml
    ```
 
 ---
