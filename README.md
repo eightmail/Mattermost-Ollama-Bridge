@@ -54,6 +54,7 @@ A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a s
 * Helm 3.x installed
 * An active Ingress Controller (e.g., Traefik) and dynamic storage provisioner (e.g., `local-path`)
 * An insecure local container registry running on your network (e.g., at port `5000`).
+* An accessable Ollama server  
 
 ---
 
@@ -153,4 +154,11 @@ The `ollama-bridge` subchart runs a custom Python application. Build and push it
 
 --- 
 
-⚙️  🌟 🚀 
+## 🚀 Performance Best Practices  
+* Preload the Ollama models into memory.  
+```bash
+curl http://<local ip address>:11434/api/generate -d '{"model": "huihui_ai/qwen3-abliterated:14b", "prompt": "hi", "stream": false}'
+```  
+* Set a forgiving timeout; depending on your Ollama server's RAM bandwidth (i.e.; 120)  
+
+⚙️  🌟 
