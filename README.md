@@ -5,7 +5,7 @@ A Production-Grade Raspberry Pi K8S Cluster umbrella Helm chart that deploys a s
 ---
 
 ## ⚡ TL;DR
-📝 if you don't already have a Mattermost server, you will have to rebuild the ollama-bridge with the bot tokens you create in the Mattermost server after you bring it up. 
+📝 if you don't already have a Mattermost server, you will have to rebuild the ollama-bridge with the bot tokens you create in the Mattermost server after you bring it up.   
 
 1. Create Mattermost bots and get tokens 
    ```bash
@@ -67,7 +67,8 @@ The `ollama-bridge` subchart runs a custom Python application. Build and push it
    ```
 
 2. **Build and push the image:**  
-   📝 You can use the included script or do it manually. The script is useful for rebuilding after modifiying `main.py`
+   📝 You can use the included script or do it manually. The script is useful for rebuilding after modifiying `main.py`  
+
    a. Using the included script
       ```bash
       sudo ./buildbot.sh
